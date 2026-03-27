@@ -150,7 +150,7 @@ SML tags available:
         '--temperature', '--length_penalty', '--num_beams', '--repetition_penalty', 
         '--top_k', '--top_p', '--speed', '--enable_text_splitting',
         '--text_temp', '--waveform_temp',
-        '--output_dir', '--version', '--workflow', '--help'
+        '--output_dir', '--version', '--workflow', '--pronunciation_dict', '--help'
     ]
     tts_engine_list_keys = [k for k in TTS_ENGINES.keys()]
     tts_engine_list_values = [k for k in TTS_ENGINES.values()]
@@ -201,6 +201,7 @@ SML tags available:
     headless_optional_group.add_argument(options[24], type=float, default=default_engine_settings[TTS_ENGINES['BARK']]['waveform_temp'], help=f"""(bark only, optional) Waveform Temperature for the model. 
     Default to config.json model.""")
     headless_optional_group.add_argument(options[25], type=str, help=f'''(Optional) Path to the output directory. Default is set in ./lib/conf.py''')
+    headless_optional_group.add_argument(options[28], type=str, default=None, help='''(Optional) Path to a JSON file mapping words to phonetic spellings for pronunciation control.''')
     headless_optional_group.add_argument(options[26], action='version', version=f'ebook2audiobook version {prog_version}', help='''Show the version of the script and exit''')
     headless_optional_group.add_argument(options[27], action='store_true', help=argparse.SUPPRESS)
     
@@ -282,6 +283,9 @@ SML tags available:
             if args['custom_model'] is not None:
                 if os.path.exists(args['custom_model']):
                     args['custom_model'] = os.path.abspath(args['custom_model'])
+            if args['pronunciation_dict'] is not None:
+                if os.path.exists(args['pronunciation_dict']):
+                    args['pronunciation_dict'] = os.path.abspath(args['pronunciation_dict'])
             if args['output_dir'] is not None and not os.path.exists(args['output_dir']):
                 error = 'Error: --output_dir path does not exist.'
                 print(error)

@@ -554,6 +554,9 @@ def build_interface(args:dict)->gr.Blocks:
                                 with gr.Group(elem_id='gr_group_language', elem_classes=['gr-group']):
                                     gr_language_markdown = gr.Markdown(elem_id='gr_language_markdown', elem_classes=['gr-markdown'], value='Language')
                                     gr_language = gr.Dropdown(label='', elem_id='gr_language', choices=language_options, value=default_language_code, type='value', interactive=True)
+                                with gr.Group(elem_id='gr_group_pronunciation_dict', elem_classes=['gr-group']):
+                                    gr_pronunciation_dict_markdown = gr.Markdown(elem_id='gr_pronunciation_dict_markdown', elem_classes=['gr-markdown'], value='Pronunciation Dictionary')
+                                    gr_pronunciation_dict = gr.File(label='Upload JSON dictionary (optional)', elem_id='gr_pronunciation_dict', file_types=['.json'], file_count='single', height=60)
                                 gr_group_voice_file = gr.Group(elem_id='gr_group_voice_file', elem_classes=['gr-group'], visible=visible_gr_group_voice_file)
                                 with gr_group_voice_file:
                                     gr_voice_markdown = gr.Markdown(elem_id='gr_voice_markdown', elem_classes=['gr-markdown'], value='Voices')
@@ -792,16 +795,16 @@ def build_interface(args:dict)->gr.Blocks:
             ############## End of Gradio Components creation
 
             def disable_components()->tuple:
-                outputs = tuple([gr.update(interactive=False) for _ in range(12)])
+                outputs = tuple([gr.update(interactive=False) for _ in range(13)])
                 return outputs
-            
+
             def enable_components(session_id:str)->tuple:
                 session = context.get_session(session_id)
                 if session and session.get('id', False):
                     if session['status'] not in [status_tags['BLOCKS']]:
-                        outputs = tuple([gr.update(interactive=True) for _ in range(12)])
+                        outputs = tuple([gr.update(interactive=True) for _ in range(13)])
                         return outputs
-                outputs = tuple([gr.update() for _ in range(12)])
+                outputs = tuple([gr.update() for _ in range(13)])
                 return outputs
                 
             def disable_on_voice_upload()->tuple:
@@ -1612,7 +1615,7 @@ def build_interface(args:dict)->gr.Blocks:
             def start_conversion(
                     session_id:str, device:str, ebook_file:str, blocks_preview:bool, tts_engine:str, language:str, voice:str, custom_model:str, fine_tuned:str, output_format:str, output_channel:str, xtts_temperature:float, 
                     xtts_length_penalty:int, xtts_num_beams:int, xtts_repetition_penalty:float, xtts_top_k:int, xtts_top_p:float, xtts_speed:float, xtts_enable_text_splitting:bool, bark_text_temp:float, bark_waveform_temp:float,
-                    output_split:bool, output_split_hours:str
+                    output_split:bool, output_split_hours:str, pronunciation_dict:str=None
                 )->tuple:
                 try:
                     session = context.get_session(session_id)
@@ -1644,6 +1647,7 @@ def build_interface(args:dict)->gr.Blocks:
                             "bark_waveform_temp": float(bark_waveform_temp),
                             "output_split": bool(output_split),
                             "output_split_hours": output_split_hours,
+                            "pronunciation_dict": pronunciation_dict,
                         }
                         error = None
                         if args['ebook'] is None and args['ebook_list'] is None:
@@ -1966,17 +1970,20 @@ def build_interface(args:dict)->gr.Blocks:
                 gr_session, gr_device, gr_ebook_file, gr_blocks_preview, gr_tts_engine_list, gr_language, gr_voice_list,
                 gr_custom_model_list, gr_fine_tuned_list, gr_output_format_list, gr_output_channel_list,
                 gr_xtts_temperature, gr_xtts_length_penalty, gr_xtts_num_beams, gr_xtts_repetition_penalty, gr_xtts_top_k, gr_xtts_top_p, gr_xtts_speed, gr_xtts_enable_text_splitting,
-                gr_bark_text_temp, gr_bark_waveform_temp, gr_output_split, gr_output_split_hours
+                gr_bark_text_temp, gr_bark_waveform_temp, gr_output_split, gr_output_split_hours,
+                gr_pronunciation_dict
             ]
             outputs_enable_components = [
                 gr_ebook_mode, gr_blocks_preview, gr_language, gr_voice_file, gr_voice_list,
                 gr_device, gr_tts_engine_list, gr_fine_tuned_list, gr_custom_model_file,
-                gr_custom_model_list, gr_output_format_list, gr_output_channel_list
+                gr_custom_model_list, gr_output_format_list, gr_output_channel_list,
+                gr_pronunciation_dict
             ]
             outputs_disable_components = [
                 gr_ebook_mode, gr_blocks_preview, gr_language, gr_voice_file, gr_voice_list,
                 gr_device, gr_tts_engine_list, gr_fine_tuned_list, gr_custom_model_file,
-                gr_custom_model_list, gr_output_format_list, gr_output_channel_list
+                gr_custom_model_list, gr_output_format_list, gr_output_channel_list,
+                gr_pronunciation_dict
             ]
             outputs_edit_blocks = [
                 gr_blocks_markdown, gr_group_main, gr_group_blocks,

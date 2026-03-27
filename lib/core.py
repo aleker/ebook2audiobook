@@ -168,6 +168,7 @@ class SessionContext:
             "output_channel": default_output_channel,
             "output_split": default_output_split,
             "output_split_hours": default_output_split_hours,
+            "pronunciation_dict": None,
             ####### Xtts settings
             "xtts_temperature": default_engine_settings[TTS_ENGINES['XTTSv2']]['temperature'],
             #"xtts_codec_temperature": default_engine_settings[TTS_ENGINES['XTTSv2']]['codec_temperature'],
@@ -784,9 +785,10 @@ INTO A NEW TRAINING MODEL. YOU CAN IMPROVE IT OR ASK TO A TRAINING MODEL EXPERT.
             # Step 1: Extract TOC (Table of Contents)
             try:
                 toc = epubBook.toc
+                pronunciation_dict = session.get('pronunciation_dict')
                 toc_list = [
                         nt for item in toc if hasattr(item, 'title')
-                        if (nt := normalize_text(str(item.title), session['language'], session['language_iso1'], session['tts_engine'])) is not None
+                        if (nt := normalize_text(str(item.title), session['language'], session['language_iso1'], session['tts_engine'], pronunciation_dict=pronunciation_dict)) is not None
                 ]
             except Exception as toc_error:
                 error = f'Error extracting Table of Content: {toc_error}'
@@ -1140,7 +1142,7 @@ def filter_blocks(session_id:str, idx:int, doc:EpubHtml, stanza_nlp:Pipeline, is
             text = math2words(text, lang, lang_iso1, tts_engine, is_num2words_compat)
             msg = 'Normalize text…'
             print(msg)
-            text = normalize_text(text, lang, lang_iso1, tts_engine)
+            text = normalize_text(text, lang, lang_iso1, tts_engine, pronunciation_dict=session.get('pronunciation_dict'))
             text = restore_sml(text, sml_blocks)
             return text
         return None
@@ -1877,7 +1879,7 @@ def sml_token(tag:str, value:str|None=None, close:bool=False)->str:
         return f"[{tag}:{value}]"
     return f"[{tag}]"
 
-def normalize_text(text:str, lang:str, lang_iso1:str, tts_engine:str)->str:
+def normalize_text(text:str, lang:str, lang_iso1:str, tts_engine:str, pronunciation_dict:dict=None)->str:
 
     def replace(match:re.Match)->str:
         token = match.group(1)
@@ -1899,6 +1901,19 @@ def normalize_text(text:str, lang:str, lang_iso1:str, tts_engine:str)->str:
             flags=re.IGNORECASE
         )
         text = pattern.sub(replace, text)
+    if pronunciation_dict:
+        def pron_replace(match:re.Match)->str:
+            token = match.group(1)
+            for k, v in pronunciation_dict.items():
+                if token.lower() == k.lower():
+                    return v
+            return token
+        pron_keys = sorted(pronunciation_dict.keys(), key=len, reverse=True)
+        pron_pattern = re.compile(
+            r'(?<!\w)(' + '|'.join(re.escape(k) for k in pron_keys) + r')(?!\w)',
+            flags=re.IGNORECASE
+        )
+        text = pron_pattern.sub(pron_replace, text)
     # This regex matches sequences like a., c.i.a., f.d.a., m.c., etc…
     pattern = re.compile(r'\b(?:[a-zA-Z]\.){1,}[a-zA-Z]?\b\.?')
     # uppercase acronyms
@@ -2626,6 +2641,15 @@ def convert_ebook(args:dict)->tuple:
             session['output_channel'] = str(args['output_channel'])
             session['output_split'] = bool(args['output_split'])
             session['output_split_hours'] = args['output_split_hours']if args['output_split_hours'] is not None else default_output_split_hours
+            session['pronunciation_dict'] = None
+            dict_path = args.get('pronunciation_dict') or (default_pronunciation_dict_path if os.path.exists(default_pronunciation_dict_path) else None)
+            if dict_path:
+                import json as _json
+                dict_path = str(dict_path)
+                if os.path.exists(dict_path):
+                    with open(dict_path, 'r', encoding='utf-8') as f:
+                        session['pronunciation_dict'] = _json.load(f)
+                    print(f'Loaded pronunciation dictionary ({dict_path}): {len(session["pronunciation_dict"])} entries')
             session['model_cache'] = f"{session['tts_engine']}-{session['fine_tuned']}"
             session['session_dir'] = os.path.join(tmp_dir, f'proc-{session_id}')
             ebook_name = get_sanitized(Path(session['ebook']).stem)

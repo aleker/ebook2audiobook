@@ -8,7 +8,8 @@ from .conf import (
     max_python_version, min_python_version, models_dir, os,
     output_formats, prog_version, python_env_dir,
     requirements_file, components_dir, root_dir, tmp_dir, run_dir, gradio_cache_dir, tmp_expire, tts_dir, voice_formats,
-    voices_dir, default_output_split, default_output_split_hours
+    voices_dir, default_output_split, default_output_split_hours,
+    default_pronunciation_dict_path
 )
 
 from .conf_lang import (
@@ -40,6 +41,7 @@ __all__ = [
     "output_formats", "prog_version", "python_env_dir",
     "requirements_file", "components_dir", "root_dir", "tmp_dir", "run_dir", "gradio_cache_dir", "tmp_expire", "tts_dir",
     "voice_formats", "voices_dir", "default_output_split", "default_output_split_hours",
+    "default_pronunciation_dict_path",
 
     # from conf_lang
     "abbreviations_mapping", "chapter_word_mapping", "default_language_code",

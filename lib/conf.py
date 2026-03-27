@@ -24,6 +24,7 @@ ebooks_dir = os.path.abspath('ebooks')
 voices_dir = os.path.abspath('voices')
 tts_dir = os.path.join(models_dir, 'tts')
 components_dir = os.path.abspath('components')
+default_pronunciation_dict_path = os.path.join(root_dir, 'my_dict.json')
 
 tempfile.tempdir = run_dir
 tmp_expire = 7 # days
