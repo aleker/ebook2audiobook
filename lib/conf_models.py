@@ -58,7 +58,7 @@ default_engine_settings = {
         "repo": "coqui/XTTS-v2",
         "languages": {"ara": "ar", "ces": "cs", "deu": "de", "eng": "en", "fra": "fr", "hin": "hi", "hun": "hu", "ita": "it", "jpn": "ja", "kor": "ko", "nld": "nl", "pol": "pl", "por": "pt", "rus": "ru", "spa": "es", "tur": "tr", "zho": "zh-cn"},
         "samplerate": 24000,
-        "temperature": 0.75,
+        "temperature": 0.75, # PL-Alex 1.1
         #"codec_temperature": 0.3,
         "length_penalty": 1.0,
         "num_beams": 1,
@@ -66,7 +66,7 @@ default_engine_settings = {
         #"cvvp_weight": 0.3,
         "top_k": 40,
         "top_p": 0.95,
-        "speed": 1.0,
+        "speed": 1.0, # PL-Alex 1.4
         #"gpt_cond_len": 512,
         #"gpt_batch_size": 1,
         "enable_text_splitting": False,
@@ -91,7 +91,7 @@ default_engine_settings = {
             "FilipTraverse": "Filip Traverse", "DamjanChapman": "Damjan Chapman", "WulfCarlevaro": "Wulf Carlevaro",
             "AaronDreschner": "Aaron Dreschner", "KumarDahl": "Kumar Dahl", "EugenioMataracı": "Eugenio Mataracı",
             "FerranSimen": "Ferran Simen", "XavierHayasaka": "Xavier Hayasaka", "LuisMoray": "Luis Moray",
-            "MarcosRudaski": "Marcos Rudaski"
+            "MarcosRudaski": "Marcos Rudaski", "PL-Alex": "ElevenLabs Alex"
         },
         "rating": {"VRAM": 4, "CPU": 2, "RAM": 4, "Realism": 5}
     },

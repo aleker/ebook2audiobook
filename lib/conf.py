@@ -119,6 +119,7 @@ torch_matrix = {
     "cu124":     {"url": default_pytorch_url, "base": "2.6.0"},
     "cu126":     {"url": default_pytorch_url, "base": "2.7.1"},
     "cu128":     {"url": default_pytorch_url, "base": "2.7.1"},
+    "cu130":     {"url": default_pytorch_url, "base": "2.10.0"},
     # ROCm
     "rocm5.7":   {"url": default_pytorch_url, "base": "2.3.1"},
     "rocm6.0":   {"url": default_pytorch_url, "base": "2.4.1"},
@@ -136,7 +137,7 @@ torch_matrix = {
     "jetson61":  {"url": default_jetson_url, "base": "2.5.0"}
 }
 
-cuda_version_range = {"min": (11,8), "max": (12,8)}
+cuda_version_range = {"min": (11,8), "max": (13,0)}
 rocm_version_range = {"min": (5,7), "max": (6,3)}
 mps_version_range = {"min": (0,0), "max": (0,0)}
 xpu_version_range = {"min": (0,0), "max": (0,0)}
